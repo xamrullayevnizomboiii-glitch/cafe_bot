@@ -8,7 +8,7 @@ from aiogram.client.default import DefaultBotProperties
 from config import BOT_TOKEN, ADMIN_ID
 
 # WEBAPP URL - Buni Dokploy/Cloudflare orqali olingan manzilga almashtiramiz
-WEBAPP_URL = "https://app.arakulovlandingpage.com/mini_app/"
+WEBAPP_URL = "https://app.arakulovlandingpage.com"
 
 # Bot va Dispatcher yaratish
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
