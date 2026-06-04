@@ -5,14 +5,19 @@
     --bg-color: #C8B99A;
     --card-bg: #EFE7DA;
     --main-btn: #1E8449;
+    --main-btn-light: #D5F5E3;
+    --main-btn-hover: #145A32;
     --text-color: #2C2C2C;
     --price-color: #C0392B;
     --border-color: #1E8449;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --heart-bg: rgba(255, 255, 255, 0.85);
+    --heart-bg: #D5F5E3;
     --nav-bg: #EFE7DA;
-    --cart-item-bg: #EFE7DA;
-    --overlay-bg: rgba(0, 0, 0, 0.4);
+    --nav-btn-bg: #D5F5E3;
+    --nav-btn-active-bg: #1E8449;
+    --nav-btn-active-text: #FFFFFF;
+    --toast-bg: #D5F5E3;
+    --toast-border: #1E8449;
 }
 
 /* ============================
@@ -22,14 +27,19 @@
     --bg-color: #1A1C23;
     --card-bg: #242731;
     --main-btn: #27AE60;
+    --main-btn-light: rgba(39, 174, 96, 0.2);
+    --main-btn-hover: #1E8449;
     --text-color: #E8E8EA;
     --price-color: #E74C3C;
     --border-color: #27AE60;
     --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    --heart-bg: rgba(0, 0, 0, 0.5);
+    --heart-bg: rgba(39, 174, 96, 0.25);
     --nav-bg: #242731;
-    --cart-item-bg: #242731;
-    --overlay-bg: rgba(0, 0, 0, 0.6);
+    --nav-btn-bg: rgba(39, 174, 96, 0.15);
+    --nav-btn-active-bg: #27AE60;
+    --nav-btn-active-text: #FFFFFF;
+    --toast-bg: rgba(39, 174, 96, 0.2);
+    --toast-border: #27AE60;
 }
 
 /* ============================
@@ -72,7 +82,7 @@ h2 {
 @keyframes sectionSlideIn {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(14px);
     }
     to {
         opacity: 1;
@@ -138,7 +148,7 @@ h2 {
 }
 
 /* ============================
-   LIKE BUTTON
+   LIKE BUTTON (Och yashil fon)
    ============================ */
 .like-btn {
     position: absolute;
@@ -156,6 +166,7 @@ h2 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     transition: all 0.3s ease;
     z-index: 2;
+    border: 1.5px solid var(--border-color);
 }
 
 .like-btn:active {
@@ -198,15 +209,14 @@ h2 {
     justify-content: space-between;
     width: 100%;
     height: 100%;
-    background-color: var(--card-bg);
-    border-radius: 10px;
-    border: 1.5px solid var(--border-color);
-    overflow: hidden;
+    padding: 0 4px;
 }
 
+/* Plus / Minus — DUMALOQ (oval) */
 .controls button {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
     border: none;
     background-color: var(--main-btn);
     color: white;
@@ -217,24 +227,31 @@ h2 {
     justify-content: center;
     align-items: center;
     transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.controls button:hover {
+    box-shadow: 0 3px 10px rgba(30, 132, 73, 0.35);
+    transform: scale(1.08);
 }
 
 .controls button:active {
-    transform: scale(0.85);
-    opacity: 0.85;
+    transform: scale(0.88);
 }
 
 .controls span {
     font-size: 16px;
     font-weight: 700;
     color: var(--text-color);
+    min-width: 20px;
+    text-align: center;
 }
 
 /* ============================
    SAVAT (CART)
    ============================ */
 .cart-item {
-    background-color: var(--cart-item-bg);
+    background-color: var(--card-bg);
     border-radius: 14px;
     padding: 14px;
     margin: 10px 12px;
@@ -269,7 +286,7 @@ h2 {
 }
 
 .cart-item .controls-container {
-    width: 100px;
+    width: 110px;
     margin-top: 0;
 }
 
@@ -285,9 +302,10 @@ h2 {
     margin-bottom: 10px;
 }
 
+/* Cart Total */
 .cart-total {
     padding: 16px;
-    margin: 0 12px;
+    margin: 10px 12px;
     background-color: var(--card-bg);
     border-radius: 14px;
     border: 1.5px solid var(--border-color);
@@ -300,6 +318,7 @@ h2 {
     align-items: center;
     font-size: 18px;
     font-weight: 700;
+    margin-bottom: 12px;
 }
 
 .total-sum {
@@ -307,7 +326,37 @@ h2 {
     font-size: 20px;
 }
 
-/* Saqlanganlar tugmasi (Savat ichida) */
+/* ============================
+   CHECKOUT & SUBMIT TUGMALARI
+   ============================ */
+.checkout-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background-color: var(--main-btn);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(30, 132, 73, 0.3);
+    margin-top: 4px;
+}
+
+.checkout-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(30, 132, 73, 0.4);
+    background-color: var(--main-btn-hover);
+}
+
+.checkout-btn:active {
+    transform: scale(0.97);
+}
+
+/* Saqlanganlar tugmasi */
 .saved-open-btn {
     display: block;
     width: calc(100% - 24px);
@@ -335,7 +384,7 @@ h2 {
 }
 
 /* ============================
-   SAQLANGANLAR OVERLAY
+   SAQLANGANLAR HEADER
    ============================ */
 .saved-header {
     display: flex;
@@ -402,10 +451,12 @@ h2 {
     font-family: 'Outfit', sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-bottom: 12px;
 }
 
 .location-btn:hover {
     background-color: rgba(30, 132, 73, 0.08);
+    transform: translateY(-2px);
 }
 
 .location-btn:active {
@@ -418,6 +469,7 @@ h2 {
     color: var(--main-btn);
 }
 
+/* Back button */
 .back-btn {
     display: inline-block;
     margin: 14px 12px;
@@ -494,17 +546,19 @@ h2 {
     background-color: var(--nav-bg);
     display: flex;
     padding: 6px 6px;
+    gap: 5px;
     border-top: 2px solid var(--border-color);
     z-index: 100;
     transition: all 0.3s ease;
 }
 
+/* Och yashil fon, bosilganda to'q yashil + oq yozuv */
 .nav-btn {
     flex: 1;
-    background-color: transparent;
-    border: 1.5px solid transparent;
+    background-color: var(--nav-btn-bg);
+    border: 1.5px solid var(--border-color);
     border-radius: 12px;
-    color: var(--text-color);
+    color: var(--main-btn);
     font-size: 11px;
     font-weight: 600;
     font-family: 'Outfit', sans-serif;
@@ -514,7 +568,6 @@ h2 {
     justify-content: center;
     gap: 2px;
     cursor: pointer;
-    opacity: 0.6;
     transition: all 0.3s ease;
     padding: 8px 4px;
     position: relative;
@@ -522,18 +575,20 @@ h2 {
 }
 
 .nav-btn:hover {
-    opacity: 0.85;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 132, 73, 0.15);
 }
 
 .nav-btn:active {
     transform: scale(0.93);
 }
 
+/* ACTIVE — to'q yashil fon, oq harflar */
 .nav-btn.active {
-    opacity: 1;
-    color: var(--main-btn);
-    background-color: rgba(30, 132, 73, 0.1);
-    border-color: var(--border-color);
+    background-color: var(--nav-btn-active-bg);
+    color: var(--nav-btn-active-text);
+    border-color: var(--nav-btn-active-bg);
+    box-shadow: 0 4px 14px rgba(30, 132, 73, 0.3);
 }
 
 .nav-icon {
@@ -545,7 +600,7 @@ h2 {
 }
 
 /* ============================
-   BADGE (Savat raqami)
+   BADGE
    ============================ */
 .badge {
     position: absolute;
@@ -572,18 +627,20 @@ h2 {
     bottom: 90px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background-color: var(--card-bg);
+    background-color: var(--toast-bg);
     color: var(--main-btn);
-    padding: 10px 24px;
+    padding: 12px 28px;
     border-radius: 12px;
     font-size: 14px;
     font-weight: 600;
+    font-family: 'Outfit', sans-serif;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--border-color);
+    border: 1.5px solid var(--toast-border);
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: all 0.35s ease;
     z-index: 200;
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .toast.show {

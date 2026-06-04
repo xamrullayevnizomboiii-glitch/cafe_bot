@@ -34,41 +34,55 @@ function haptic() {
 }
 
 /* ============================
+   TOAST
+   ============================ */
+function showToast(message) {
+    var toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(function () {
+        toast.classList.remove('show');
+    }, 2000);
+}
+
+/* ============================
    GLOBAL O'ZGARUVCHILAR
    ============================ */
-let cart = {};
-let saved = {};
-let userLocation = null;
-let currentView = 'main';
+var cart = {};
+var saved = {};
+var userLocation = null;
+var currentView = 'main';
 
 /* ============================
    DOM ELEMENTLARI
    ============================ */
-const foodsList = document.getElementById('foods-list');
-const drinksList = document.getElementById('drinks-list');
-const saladsList = document.getElementById('salads-list');
-const savedList = document.getElementById('saved-list');
-const cartItemsContainer = document.getElementById('cart-items');
-const cartBadge = document.getElementById('cart-badge');
-const totalPriceEl = document.getElementById('total-price');
-const cartTotalBlock = document.getElementById('cart-total-block');
-const orderForm = document.getElementById('order-form');
-const locationBtn = document.getElementById('location-btn');
-const savedOverlay = document.getElementById('saved-overlay');
+var foodsList = document.getElementById('foods-list');
+var drinksList = document.getElementById('drinks-list');
+var saladsList = document.getElementById('salads-list');
+var savedList = document.getElementById('saved-list');
+var cartItemsContainer = document.getElementById('cart-items');
+var cartBadge = document.getElementById('cart-badge');
+var totalPriceEl = document.getElementById('total-price');
+var cartTotalBlock = document.getElementById('cart-total-block');
+var orderForm = document.getElementById('order-form');
+var locationBtn = document.getElementById('location-btn');
+var savedOverlay = document.getElementById('saved-overlay');
+var checkoutBtn = document.getElementById('checkout-btn');
+var submitOrderBtn = document.getElementById('submit-order-btn');
 
 /* ============================
    NAVIGATSIYA
    ============================ */
-const navBtns = document.querySelectorAll('.nav-btn');
-const sections = document.querySelectorAll('.section');
+var navBtns = document.querySelectorAll('.nav-btn');
+var sections = document.querySelectorAll('.section');
 
-navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+navBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
         haptic();
-        const targetId = btn.getAttribute('data-target');
+        var targetId = btn.getAttribute('data-target');
 
-        sections.forEach(sec => sec.classList.remove('active'));
-        navBtns.forEach(b => b.classList.remove('active'));
+        sections.forEach(function (sec) { sec.classList.remove('active'); });
+        navBtns.forEach(function (b) { b.classList.remove('active'); });
         orderForm.style.display = 'none';
         savedOverlay.style.display = 'none';
 
@@ -77,14 +91,13 @@ navBtns.forEach(btn => {
 
         currentView = targetId === 'cart-section' ? 'cart' : 'main';
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        updateMainButton();
     });
 });
 
 /* ============================
    SAQLANGANLAR (Savat ichida)
    ============================ */
-document.getElementById('open-saved-btn').addEventListener('click', () => {
+document.getElementById('open-saved-btn').addEventListener('click', function () {
     haptic();
     document.getElementById('cart-section').classList.remove('active');
     savedOverlay.style.display = 'block';
@@ -92,45 +105,62 @@ document.getElementById('open-saved-btn').addEventListener('click', () => {
     currentView = 'saved';
     renderSaved();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateMainButton();
 });
 
-document.getElementById('back-from-saved').addEventListener('click', () => {
+document.getElementById('back-from-saved').addEventListener('click', function () {
     haptic();
     savedOverlay.style.display = 'none';
     savedOverlay.classList.remove('active');
     document.getElementById('cart-section').classList.add('active');
     currentView = 'cart';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateMainButton();
+});
+
+/* ============================
+   XARID QILISH TUGMASI
+   ============================ */
+checkoutBtn.addEventListener('click', function () {
+    haptic();
+    document.getElementById('cart-section').classList.remove('active');
+    orderForm.style.display = 'block';
+    orderForm.classList.add('active');
+    currentView = 'order';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ============================
+   BUYURTMA RASMIYLASHTIRISH TUGMASI
+   ============================ */
+submitOrderBtn.addEventListener('click', function () {
+    submitOrder();
 });
 
 /* ============================
    Orqaga (Buyurtma -> Savat)
    ============================ */
-document.getElementById('back-to-cart-btn').addEventListener('click', () => {
+document.getElementById('back-to-cart-btn').addEventListener('click', function () {
     haptic();
     orderForm.style.display = 'none';
+    orderForm.classList.remove('active');
     document.getElementById('cart-section').classList.add('active');
     currentView = 'cart';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateMainButton();
 });
 
 /* ============================
    USER PROFIL
    ============================ */
-const userProfile = document.getElementById('user-profile');
+var userProfile = document.getElementById('user-profile');
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    const user = tg.initDataUnsafe.user;
-    const photoUrl = user.photo_url || 'https://telegram.org/img/t_logo.png';
-    const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
-    const username = user.username ? '@' + user.username : '';
+    var user = tg.initDataUnsafe.user;
+    var photoUrl = user.photo_url || 'https://telegram.org/img/t_logo.png';
+    var uname = [user.first_name, user.last_name].filter(Boolean).join(' ');
+    var username = user.username ? '@' + user.username : '';
 
     userProfile.innerHTML =
         '<img src="' + photoUrl + '" alt="Avatar" class="user-avatar" onerror="this.src=\'https://telegram.org/img/t_logo.png\'">' +
         '<div class="user-info">' +
-            '<div class="user-name">' + name + '</div>' +
+            '<div class="user-name">' + uname + '</div>' +
             '<div class="user-username">' + username + '</div>' +
         '</div>';
     userProfile.style.display = 'flex';
@@ -140,22 +170,22 @@ if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
    MAHSULOT TOPISH
    ============================ */
 function getProductById(id) {
-    let found = menuData.foods.find(p => p.id === id);
-    if (!found) found = menuData.drinks.find(p => p.id === id);
-    if (!found) found = menuData.salads.find(p => p.id === id);
+    var found = menuData.foods.find(function (p) { return p.id === id; });
+    if (!found) found = menuData.drinks.find(function (p) { return p.id === id; });
+    if (!found) found = menuData.salads.find(function (p) { return p.id === id; });
     return found;
 }
 
 /* ============================
-   RENDER (Mahsulotlarni chizish)
+   RENDER
    ============================ */
 function renderProducts(products, container) {
     container.innerHTML = '';
-    products.forEach(product => {
-        const isSaved = saved[product.id];
-        const heartContent = isSaved ? '❤️' : '🤍';
+    products.forEach(function (product) {
+        var isSaved = saved[product.id];
+        var heartContent = isSaved ? '❤️' : '🤍';
 
-        const div = document.createElement('div');
+        var div = document.createElement('div');
         div.className = 'card';
         div.innerHTML =
             '<div class="like-btn" onclick="toggleSaved(\'' + product.id + '\')">' + heartContent + '</div>' +
@@ -169,10 +199,9 @@ function renderProducts(products, container) {
 }
 
 function updateProductControls(id) {
-    const count = cart[id] ? cart[id].count : 0;
+    var count = cart[id] ? cart[id].count : 0;
 
-    // Asosiy sahifadagi kontrol
-    const container = document.getElementById('controls-' + id);
+    var container = document.getElementById('controls-' + id);
     if (container) {
         if (count === 0) {
             container.innerHTML = '<button class="add-btn" onclick="addToCart(\'' + id + '\')">Qo\'shish ➕</button>';
@@ -186,8 +215,7 @@ function updateProductControls(id) {
         }
     }
 
-    // Saqlanganlar sahifasidagi kontrol
-    const savedContainer = document.getElementById('saved-controls-' + id);
+    var savedContainer = document.getElementById('saved-controls-' + id);
     if (savedContainer) {
         if (count === 0) {
             savedContainer.innerHTML = '<button class="add-btn" onclick="addToCart(\'' + id + '\')">Qo\'shish ➕</button>';
@@ -210,16 +238,16 @@ function renderAll() {
 
 function renderSaved() {
     savedList.innerHTML = '';
-    const keys = Object.keys(saved);
+    var keys = Object.keys(saved);
     if (keys.length === 0) {
         savedList.innerHTML = '<p class="empty-cart" style="grid-column: span 2;">Saqlangan taomlar yo\'q</p>';
         return;
     }
 
-    keys.forEach(id => {
-        const product = getProductById(id);
+    keys.forEach(function (id) {
+        var product = getProductById(id);
         if (!product) return;
-        const div = document.createElement('div');
+        var div = document.createElement('div');
         div.className = 'card';
         div.innerHTML =
             '<div class="like-btn" onclick="toggleSaved(\'' + product.id + '\')">❤️</div>' +
@@ -233,14 +261,16 @@ function renderSaved() {
 }
 
 /* ============================
-   SAQLASH (LIKE)
+   SAQLASH (LIKE) + TOAST
    ============================ */
 window.toggleSaved = function (id) {
     haptic();
     if (saved[id]) {
         delete saved[id];
+        showToast('❌ Mahsulot olib tashlandi');
     } else {
         saved[id] = true;
+        showToast('❤️ Mahsulotingiz saqlandi');
     }
     renderAll();
     if (currentView === 'saved') {
@@ -258,7 +288,7 @@ window.addToCart = function (id) {
 
 window.updateCart = function (id, change, doHaptic) {
     if (doHaptic !== false) haptic();
-    const product = getProductById(id);
+    var product = getProductById(id);
     if (!product && !cart[id]) return;
 
     if (!cart[id]) {
@@ -277,10 +307,10 @@ window.updateCart = function (id, change, doHaptic) {
 
 function updateCartUI() {
     cartItemsContainer.innerHTML = '';
-    let totalItems = 0;
-    let totalPrice = 0;
+    var totalItems = 0;
+    var totalPrice = 0;
 
-    const cartKeys = Object.keys(cart);
+    var cartKeys = Object.keys(cart);
 
     if (cartKeys.length === 0) {
         cartItemsContainer.innerHTML =
@@ -291,12 +321,12 @@ function updateCartUI() {
         cartBadge.style.display = 'none';
         cartTotalBlock.style.display = 'none';
     } else {
-        cartKeys.forEach(id => {
-            const item = cart[id];
+        cartKeys.forEach(function (id) {
+            var item = cart[id];
             totalItems += item.count;
             totalPrice += item.price * item.count;
 
-            const div = document.createElement('div');
+            var div = document.createElement('div');
             div.className = 'cart-item';
             div.innerHTML =
                 '<div class="cart-item-info">' +
@@ -319,66 +349,21 @@ function updateCartUI() {
         totalPriceEl.textContent = totalPrice.toLocaleString() + ' so\'m';
         cartTotalBlock.style.display = 'block';
     }
-
-    updateMainButton();
-}
-
-/* ============================
-   TELEGRAM MAINBUTTON
-   ============================ */
-try {
-    tg.MainButton.onClick(() => {
-        if (currentView === 'cart') {
-            haptic();
-            document.getElementById('cart-section').classList.remove('active');
-            orderForm.style.display = 'block';
-            orderForm.classList.add('active');
-            currentView = 'order';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            updateMainButton();
-        } else if (currentView === 'order') {
-            submitOrder();
-        }
-    });
-} catch (e) {}
-
-function updateMainButton() {
-    const cartKeys = Object.keys(cart);
-    let totalPrice = 0;
-    cartKeys.forEach(id => {
-        totalPrice += cart[id].price * cart[id].count;
-    });
-
-    try {
-        if (cartKeys.length > 0) {
-            if (currentView === 'cart') {
-                tg.MainButton.text = 'Xarid qilish — ' + totalPrice.toLocaleString() + ' so\'m';
-                tg.MainButton.show();
-            } else if (currentView === 'order') {
-                tg.MainButton.text = 'Buyurtma berish';
-                tg.MainButton.show();
-            } else {
-                tg.MainButton.hide();
-            }
-        } else {
-            tg.MainButton.hide();
-        }
-    } catch (e) {}
 }
 
 /* ============================
    JOYLASHUV
    ============================ */
-locationBtn.addEventListener('click', () => {
+locationBtn.addEventListener('click', function () {
     haptic();
     if (navigator.geolocation) {
         document.getElementById('location-status').textContent = 'Joylashuv olinmoqda...';
         navigator.geolocation.getCurrentPosition(
-            (position) => {
+            function (position) {
                 userLocation = { lat: position.coords.latitude, lon: position.coords.longitude };
                 document.getElementById('location-status').textContent = '✅ Joylashuv olindi!';
             },
-            () => {
+            function () {
                 document.getElementById('location-status').textContent = '❌ Joylashuvni olishda xatolik.';
             }
         );
@@ -390,9 +375,9 @@ locationBtn.addEventListener('click', () => {
    ============================ */
 function submitOrder() {
     haptic();
-    const name = document.getElementById('name').value.trim();
-    const surname = document.getElementById('surname').value.trim();
-    const phone = document.getElementById('phone').value.trim();
+    var name = document.getElementById('name').value.trim();
+    var surname = document.getElementById('surname').value.trim();
+    var phone = document.getElementById('phone').value.trim();
 
     if (!name || !phone) {
         try {
@@ -403,15 +388,20 @@ function submitOrder() {
         return;
     }
 
-    const orderItems = Object.keys(cart).map(id => ({
-        nomi: cart[id].name,
-        soni: cart[id].count,
-        narxi: cart[id].price
-    }));
+    var orderItems = Object.keys(cart).map(function (id) {
+        return {
+            nomi: cart[id].name,
+            soni: cart[id].count,
+            narxi: cart[id].price
+        };
+    });
 
-    const totalPrice = Object.values(cart).reduce((sum, item) => sum + (item.price * item.count), 0);
+    var totalPrice = 0;
+    Object.keys(cart).forEach(function (id) {
+        totalPrice += cart[id].price * cart[id].count;
+    });
 
-    const data = {
+    var data = {
         ismi: name,
         familyasi: surname,
         telefon: phone,

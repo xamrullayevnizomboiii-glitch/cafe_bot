@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=30001">
+    <link rel="stylesheet" href="style.css?v=30010">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -49,12 +49,13 @@
                     <span>Jami:</span>
                     <span id="total-price" class="total-sum">0 so'm</span>
                 </div>
+                <button id="checkout-btn" class="checkout-btn">🛒 Xarid qilish</button>
             </div>
             <!-- Saqlanganlar tugmasi -->
             <button id="open-saved-btn" class="saved-open-btn">❤️ Saqlanganlar</button>
         </div>
 
-        <!-- Saved Overlay (Savat ichida) -->
+        <!-- Saved Overlay -->
         <div id="saved-overlay" class="section" style="display:none;">
             <div class="saved-header">
                 <button id="back-from-saved" class="back-btn">← Orqaga</button>
@@ -87,11 +88,15 @@
                     </button>
                     <p id="location-status" class="location-status"></p>
                 </div>
+                <button id="submit-order-btn" class="checkout-btn">📦 Buyurtmani rasmiylashtirish</button>
             </div>
             <button id="back-to-cart-btn" class="back-btn">← Savatga qaytish</button>
         </div>
 
     </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
@@ -114,7 +119,7 @@
         </button>
     </nav>
 
-    <script src="data.js?v=30001"></script>
-    <script src="app.js?v=30001"></script>
+    <script src="data.js?v=30010"></script>
+    <script src="app.js?v=30010"></script>
 </body>
 </html>
