@@ -2,21 +2,23 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
-// Set Telegram Native Colors
-function setupTheme() {
-    if (tg.setHeaderColor) {
-        try {
-            tg.setHeaderColor('bg_color');
-            tg.setBackgroundColor('secondary_bg_color');
-        } catch (e) {
-            console.error("Theme setup error", e);
-        }
+// Premium Dark Mode
+function applyTheme() {
+    if (tg.colorScheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.body.classList.add('theme-dark');
+        tg.setBackgroundColor('#121212');
+        tg.setHeaderColor('#121212');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.body.classList.remove('theme-dark');
+        tg.setBackgroundColor('#EFE7DA');
+        tg.setHeaderColor('#EFE7DA');
     }
 }
-setupTheme();
-tg.onEvent('themeChanged', setupTheme);
+applyTheme();
+tg.onEvent('themeChanged', applyTheme);
 
-// Haptic feedback wrapper
 function haptic() {
     if (tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred('light');
@@ -24,50 +26,42 @@ function haptic() {
 }
 
 let cart = {};
+let saved = {};
 let userLocation = null;
-let currentView = 'main'; // 'main', 'cart', 'order'
+let currentView = 'main';
 
 // Elements
-const sections = document.querySelectorAll('.section');
-const navBtns = document.querySelectorAll('.nav-btn');
-const cartBadge = document.getElementById('cart-badge');
+const foodsList = document.getElementById('foods-list');
+const drinksList = document.getElementById('drinks-list');
+const saladsList = document.getElementById('salads-list');
+const savedList = document.getElementById('saved-list');
 const cartItemsContainer = document.getElementById('cart-items');
-const cartTotalBlock = document.getElementById('cart-total-block');
+const cartBadge = document.getElementById('cart-badge');
 const totalPriceEl = document.getElementById('total-price');
+const cartTotalDiv = document.querySelector('.cart-total');
+const orderForm = document.getElementById('order-form');
+const locationBtn = document.getElementById('location-btn');
 
 // Navigation
+const navBtns = document.querySelectorAll('.nav-btn');
+const sections = document.querySelectorAll('.section');
+
 navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         haptic();
         const targetId = btn.getAttribute('data-target');
         
-        // Hide all sections
         sections.forEach(sec => sec.classList.remove('active'));
         navBtns.forEach(b => b.classList.remove('active'));
+        orderForm.style.display = 'none';
         
-        // Show target
         document.getElementById(targetId).classList.add('active');
         btn.classList.add('active');
         
-        if (targetId === 'cart-section') {
-            currentView = 'cart';
-        } else {
-            currentView = 'main';
-            document.getElementById('order-form').classList.remove('active');
-        }
-        
+        currentView = targetId === 'cart-section' ? 'cart' : 'main';
         window.scrollTo(0, 0);
         updateMainButton();
     });
-});
-
-// Back to Cart from Order Form
-document.getElementById('back-to-cart-btn').addEventListener('click', () => {
-    haptic();
-    document.getElementById('order-form').classList.remove('active');
-    document.getElementById('cart-section').classList.add('active');
-    currentView = 'cart';
-    updateMainButton();
 });
 
 // User Profile
@@ -88,22 +82,30 @@ if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     userProfile.style.display = 'flex';
 }
 
-// Render Products
-function renderProducts(products, containerId) {
-    const container = document.getElementById(containerId);
+function getProductById(id) {
+    let found = menuData.foods.find(p => p.id === id);
+    if (!found) found = menuData.drinks.find(p => p.id === id);
+    if (!found) found = menuData.salads.find(p => p.id === id);
+    return found;
+}
+
+// Render
+function renderProducts(products, container) {
     container.innerHTML = '';
-    
     products.forEach(product => {
+        const isSaved = saved[product.id];
+        const heartColor = isSaved ? '#E74C3C' : 'var(--text-color)';
+        const heartContent = isSaved ? '❤️' : '🤍';
+
         const div = document.createElement('div');
         div.className = 'card';
         div.innerHTML = `
+            <div class="like-btn" onclick="toggleSaved('${product.id}')">${heartContent}</div>
             <img src="${product.image}" alt="${product.name}">
-            <div class="card-content">
-                <h3>${product.name}</h3>
-                <p class="price">${product.price.toLocaleString()} so'm</p>
-                <div class="controls-container" id="controls-${product.id}">
-                    <!-- Controls injected dynamically -->
-                </div>
+            <h3>${product.name}</h3>
+            <p class="price">${product.price.toLocaleString()} so'm</p>
+            <div class="controls-container" id="controls-${product.id}">
+                <!-- Injected via updateProductControls -->
             </div>
         `;
         container.appendChild(div);
@@ -112,47 +114,89 @@ function renderProducts(products, containerId) {
 }
 
 function updateProductControls(id) {
+    // Update main listings
     const container = document.getElementById(`controls-${id}`);
-    if (!container) return;
+    if (container) {
+        const count = cart[id] ? cart[id].count : 0;
+        if (count === 0) {
+            container.innerHTML = `<button class="add-btn" onclick="addToCart('${id}')">Qo'shish</button>`;
+        } else {
+            container.innerHTML = `
+                <div class="controls">
+                    <button onclick="updateCart('${id}', -1)">-</button>
+                    <span>${count}</span>
+                    <button onclick="updateCart('${id}', 1)">+</button>
+                </div>
+            `;
+        }
+    }
     
-    const count = cart[id] ? cart[id].count : 0;
-    
-    if (count === 0) {
-        container.innerHTML = `
-            <button class="add-btn" onclick="addToCart('${id}')">Qo'shish ➕</button>
-        `;
-    } else {
-        container.innerHTML = `
-            <div class="quantity-controls">
-                <button onclick="updateCart('${id}', -1)">-</button>
-                <span>${count}</span>
-                <button onclick="updateCart('${id}', 1)">+</button>
-            </div>
-        `;
+    // Update saved listings
+    const savedContainer = document.getElementById(`saved-controls-${id}`);
+    if (savedContainer) {
+        const count = cart[id] ? cart[id].count : 0;
+        if (count === 0) {
+            savedContainer.innerHTML = `<button class="add-btn" onclick="addToCart('${id}')">Qo'shish</button>`;
+        } else {
+            savedContainer.innerHTML = `
+                <div class="controls">
+                    <button onclick="updateCart('${id}', -1)">-</button>
+                    <span>${count}</span>
+                    <button onclick="updateCart('${id}', 1)">+</button>
+                </div>
+            `;
+        }
     }
 }
 
-// Data init
-renderProducts(menuData.foods, 'foods-list');
-renderProducts(menuData.drinks, 'drinks-list');
-renderProducts(menuData.salads, 'salads-list');
+function renderAll() {
+    renderProducts(menuData.foods, foodsList);
+    renderProducts(menuData.drinks, drinksList);
+    renderProducts(menuData.salads, saladsList);
+    renderSaved();
+}
 
-// Cart Logic
-function getProductById(id) {
-    let found = menuData.foods.find(p => p.id === id);
-    if (!found) found = menuData.drinks.find(p => p.id === id);
-    if (!found) found = menuData.salads.find(p => p.id === id);
-    return found;
+function renderSaved() {
+    savedList.innerHTML = '';
+    const keys = Object.keys(saved);
+    if (keys.length === 0) {
+        savedList.innerHTML = `<p class="empty-cart" style="grid-column: span 2;">Saqlangan taomlar yo'q</p>`;
+        return;
+    }
+    
+    keys.forEach(id => {
+        const product = getProductById(id);
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+            <div class="like-btn" onclick="toggleSaved('${product.id}')">❤️</div>
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p class="price">${product.price.toLocaleString()} so'm</p>
+            <div class="controls-container" id="saved-controls-${product.id}"></div>
+        `;
+        savedList.appendChild(div);
+        updateProductControls(product.id);
+    });
+}
+
+window.toggleSaved = function(id) {
+    haptic();
+    if (saved[id]) {
+        delete saved[id];
+    } else {
+        saved[id] = true;
+    }
+    renderAll();
 }
 
 window.addToCart = function(id) {
     haptic();
     updateCart(id, 1, false);
-};
+}
 
 window.updateCart = function(id, change, triggerHaptic = true) {
     if (triggerHaptic) haptic();
-    
     const product = getProductById(id);
     if (!product && !cart[id]) return;
     
@@ -178,14 +222,9 @@ function updateCartUI() {
     const cartKeys = Object.keys(cart);
     
     if (cartKeys.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div class="empty-cart">
-                <div class="empty-icon">🛒</div>
-                <p>Savatingiz bo'sh</p>
-            </div>
-        `;
+        cartItemsContainer.innerHTML = '<p class="empty-cart">Savatingiz bo\'sh</p>';
         cartBadge.style.display = 'none';
-        cartTotalBlock.style.display = 'none';
+        cartTotalDiv.style.display = 'none';
     } else {
         cartKeys.forEach(id => {
             const item = cart[id];
@@ -200,7 +239,7 @@ function updateCartUI() {
                     <p>${item.price.toLocaleString()} so'm</p>
                 </div>
                 <div class="controls-container">
-                    <div class="quantity-controls">
+                    <div class="controls">
                         <button onclick="updateCart('${id}', -1)">-</button>
                         <span>${item.count}</span>
                         <button onclick="updateCart('${id}', 1)">+</button>
@@ -211,10 +250,10 @@ function updateCartUI() {
         });
         
         cartBadge.textContent = totalItems;
-        cartBadge.style.display = 'flex';
+        cartBadge.style.display = 'inline-block';
         
-        totalPriceEl.textContent = `${totalPrice.toLocaleString()} so'm`;
-        cartTotalBlock.style.display = 'block';
+        totalPriceEl.textContent = totalPrice.toLocaleString();
+        cartTotalDiv.style.display = 'flex';
     }
     
     updateMainButton();
@@ -223,14 +262,12 @@ function updateCartUI() {
 // Telegram MainButton Logic
 tg.MainButton.onClick(() => {
     if (currentView === 'cart') {
-        // Savatdan buyurtmaga o'tish
         document.getElementById('cart-section').classList.remove('active');
-        document.getElementById('order-form').classList.add('active');
+        document.getElementById('order-form').style.display = 'block';
         currentView = 'order';
         window.scrollTo(0, 0);
         updateMainButton();
     } else if (currentView === 'order') {
-        // Buyurtmani yuborish
         submitOrder();
     }
 });
@@ -258,29 +295,22 @@ function updateMainButton() {
 }
 
 // Location
-document.getElementById('location-btn').addEventListener('click', () => {
+locationBtn.addEventListener('click', () => {
     haptic();
     if (navigator.geolocation) {
-        const statusText = document.getElementById('location-status');
-        statusText.textContent = 'Joylashuv olinmoqda...';
+        document.getElementById('location-status').textContent = 'Joylashuv olinmoqda...';
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                userLocation = {
-                    lat: position.coords.latitude,
-                    lon: position.coords.longitude
-                };
-                statusText.textContent = '📍 Joylashuv muvaffaqiyatli olindi!';
-                statusText.style.color = 'var(--button-color)';
+                userLocation = { lat: position.coords.latitude, lon: position.coords.longitude };
+                document.getElementById('location-status').textContent = '📍 Joylashuv olindi!';
             },
             (error) => {
-                statusText.textContent = 'Joylashuvni olishda xatolik. Brauzerdan ruxsat bering.';
-                statusText.style.color = '#ff3b30';
+                document.getElementById('location-status').textContent = 'Joylashuvni olishda xatolik.';
             }
         );
     }
 });
 
-// Submit Order
 function submitOrder() {
     haptic();
     const name = document.getElementById('name').value;
@@ -288,28 +318,22 @@ function submitOrder() {
     const phone = document.getElementById('phone').value;
     
     if (!name || !phone) {
-        tg.showAlert("Iltimos, ism va telefon raqamingizni kiriting!");
+        tg.showAlert("Iltimos, Ism va Telefon raqamini kiriting!");
         return;
     }
     
-    const orderItems = Object.keys(cart).map(id => {
-        return {
-            nomi: cart[id].name,
-            soni: cart[id].count,
-            narxi: cart[id].price
-        };
-    });
+    const orderItems = Object.keys(cart).map(id => ({
+        nomi: cart[id].name, soni: cart[id].count, narxi: cart[id].price
+    }));
     
     const totalPrice = Object.values(cart).reduce((sum, item) => sum + (item.price * item.count), 0);
     
     const data = {
-        ismi: name,
-        familyasi: surname,
-        telefon: phone,
-        joylashuv: userLocation,
-        buyurtma: orderItems,
-        jami: totalPrice
+        ismi: name, familyasi: surname, telefon: phone, joylashuv: userLocation, buyurtma: orderItems, jami: totalPrice
     };
     
     tg.sendData(JSON.stringify(data));
 }
+
+// Init
+renderAll();
