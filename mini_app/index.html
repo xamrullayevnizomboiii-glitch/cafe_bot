@@ -4,100 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Cafe Delivery</title>
+    <title>Oson Dostavka</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=17181">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=20001">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <!-- Main Container -->
     <div id="app">
-        <!-- User Profile -->
-        <div id="user-profile" class="user-profile" style="display: none;"></div>
-        
-        <!-- Taomlar Section -->
+
+        <!-- User Profile Banner -->
+        <div id="user-profile" class="user-profile" style="display:none;"></div>
+
+        <!-- Foods Section -->
         <div id="foods-section" class="section active">
             <h2>🍽 Taomlar</h2>
-            <div class="items-list" id="foods-list"></div>
+            <div class="items-grid" id="foods-list"></div>
         </div>
 
-        <!-- Salatlar Section -->
+        <!-- Salads Section -->
         <div id="salads-section" class="section">
             <h2>🥗 Salatlar</h2>
-            <div class="items-list" id="salads-list"></div>
+            <div class="items-grid" id="salads-list"></div>
         </div>
 
-        <!-- Ichimliklar Section -->
+        <!-- Drinks Section -->
         <div id="drinks-section" class="section">
             <h2>🥤 Ichimliklar</h2>
-            <div class="items-list" id="drinks-list"></div>
+            <div class="items-grid" id="drinks-list"></div>
         </div>
 
-        <!-- Saqlanganlar Section -->
-        <div id="saved-section" class="section">
-            <h2>❤️ Saqlanganlar</h2>
-            <div class="items-list" id="saved-list">
-                <p class="empty-cart" style="grid-column: span 2;">Saqlangan mahsulotlar yo'q</p>
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button id="back-from-saved-btn" class="secondary-btn" style="width: 90%;">Orqaga</button>
-            </div>
-        </div>
-
-        <!-- Savat Section -->
+        <!-- Cart Section -->
         <div id="cart-section" class="section">
             <h2>🛒 Savat</h2>
             <div id="cart-items">
-                <p class="empty-cart">Savatingiz bo'sh</p>
+                <div class="empty-cart">
+                    <div class="empty-icon">🛒</div>
+                    <p>Savatingiz bo'sh</p>
+                </div>
             </div>
-            
-            <div class="cart-total" style="display: none;">
-                <h3>Jami: <span id="total-price">0</span> so'm</h3>
-                <button id="checkout-btn" class="main-btn">Xaridni rasmiylashtirish</button>
+            <div class="cart-total" id="cart-total-block" style="display:none;">
+                <div class="cart-total-row">
+                    <span>Jami:</span>
+                    <span id="total-price" class="total-sum">0 so'm</span>
+                </div>
             </div>
         </div>
 
-        <!-- Order Form (Hidden initially) -->
-        <div id="order-form" class="section" style="display: none;">
-            <h2>📝 Buyurtma ma'lumotlari</h2>
-            <div class="form-group">
-                <input type="text" id="name" placeholder="Ism" required>
+        <!-- Order Form -->
+        <div id="order-form" class="section" style="display:none;">
+            <h2>📝 Buyurtma</h2>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>Ism</label>
+                    <input type="text" id="name" placeholder="Ismingiz" autocomplete="given-name">
+                </div>
+                <div class="form-group">
+                    <label>Familya</label>
+                    <input type="text" id="surname" placeholder="Familyangiz" autocomplete="family-name">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="phone" placeholder="+998 90 123 45 67" autocomplete="tel">
+                </div>
+                <div class="form-group">
+                    <button type="button" id="location-btn" class="location-btn">
+                        📍 Joylashuvni yuborish
+                    </button>
+                    <p id="location-status" class="location-status"></p>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="text" id="surname" placeholder="Familya" required>
-            </div>
-            <div class="form-group">
-                <input type="tel" id="phone" placeholder="Telefon raqami (masalan: +998901234567)" required>
-            </div>
-            <div class="form-group">
-                <button type="button" id="location-btn" class="secondary-btn">📍 Joylashuvni yuborish</button>
-                <p id="location-status" style="font-size: 12px; margin-top: 5px; color: var(--main-btn);"></p>
-            </div>
-            <button id="submit-order-btn" class="main-btn">Buyurtma berish</button>
-            <button id="back-to-cart-btn" class="secondary-btn" style="margin-top: 10px;">Orqaga</button>
+            <button id="back-to-cart-btn" class="back-btn">← Savatga qaytish</button>
         </div>
 
     </div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <button class="nav-btn active" data-target="foods-section">🍽 Taomlar</button>
-        <button class="nav-btn" data-target="salads-section">🥗 Salatlar</button>
-        <button class="nav-btn" data-target="drinks-section">🥤 Ichimliklar</button>
+        <button class="nav-btn active" data-target="foods-section">
+            <span class="nav-icon">🍽</span>
+            <span class="nav-label">Taomlar</span>
+        </button>
+        <button class="nav-btn" data-target="salads-section">
+            <span class="nav-icon">🥗</span>
+            <span class="nav-label">Salatlar</span>
+        </button>
+        <button class="nav-btn" data-target="drinks-section">
+            <span class="nav-icon">🥤</span>
+            <span class="nav-label">Ichimliklar</span>
+        </button>
         <button class="nav-btn cart-nav-btn" data-target="cart-section">
-            🛒 Savat <span id="cart-badge" class="badge" style="display: none;">0</span>
+            <span class="nav-icon">🛒</span>
+            <span class="nav-label">Savat</span>
+            <span id="cart-badge" class="badge" style="display:none;">0</span>
         </button>
     </nav>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Mahsulot profilingizda saqlandi ❤️</div>
-
-    <script src="data.js?v=17182"></script>
-    <script src="app.js?v=17182"></script>
+    <script src="data.js?v=20001"></script>
+    <script src="app.js?v=20001"></script>
 </body>
 </html>

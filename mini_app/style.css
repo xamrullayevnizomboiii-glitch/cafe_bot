@@ -1,22 +1,18 @@
 :root {
-    /* Kunduzgi rejim (Estetik Qaymoq/Latte ranglar) */
-    --bg-color: #EFE7DA; /* Elegant va mayin och qaymoq fon */
-    --main-btn: #1E8449; /* To'q yashil */
-    --text-color: #2C2C2C;
-    --card-bg: #E1D2BA; /* Estetik to'qroq qaymoq (Latte) rang */
-    --nav-bg: #F5EBD9; /* Navigatsiya uchun oldingi sizga yoqqan rang */
-    --border-color: #CBBCA5; /* Chiroyli, mos keladigan chegaralar */
-    --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* Tungi rejim */
-[data-theme="dark"] {
-    --bg-color: #1a1a2e;
-    --main-btn: #27AE60;
-    --text-color: #f5f5f5;
-    --card-bg: #16213e;
-    --border-color: #0f3460;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* Telegram Theme Parameters билан ishlash */
+    --bg-color: var(--tg-theme-bg-color, #ffffff);
+    --text-color: var(--tg-theme-text-color, #000000);
+    --hint-color: var(--tg-theme-hint-color, #8e8e93);
+    --link-color: var(--tg-theme-link-color, #007aff);
+    --button-color: var(--tg-theme-button-color, #34c759);
+    --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+    --secondary-bg-color: var(--tg-theme-secondary-bg-color, #efeff4);
+    
+    /* Maxsus o'zgaruvchilar */
+    --nav-bg: var(--tg-theme-bg-color, #ffffff);
+    --nav-active-bg: rgba(52, 199, 89, 0.1);
+    --nav-active-color: var(--button-color);
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
 * {
@@ -26,413 +22,319 @@
 }
 
 body {
-    font-family: 'Outfit', sans-serif;
-    background-color: var(--bg-color);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--secondary-bg-color);
     color: var(--text-color);
-    padding-bottom: 70px;
+    padding-bottom: 90px; /* Bottom nav uchun joy */
+    -webkit-font-smoothing: antialiased;
 }
 
 h2 {
-    margin: 15px;
+    margin: 20px 16px 12px;
     font-size: 22px;
-    color: #C0392B; /* To'q qizil rang */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+    font-weight: 700;
 }
 
 /* Sections */
-.section {
-    display: none;
-}
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.section.active {
-    display: block;
-}
-
-/* Items Grid */
-.items-list {
+/* Grid Layout */
+.items-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 0 12px;
+    gap: 16px;
+    padding: 0 16px 20px;
 }
 
-/* Product Card */
+/* 1. Karta va Rasmlar dizayni (Edge-to-edge UI) */
 .card {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 10px;
-    text-align: center;
+    background-color: var(--bg-color);
+    border-radius: 16px;
     box-shadow: var(--shadow);
-    border: 1px solid var(--main-btn); /* Hamma tomoni yashil chiziq */
-    transition: all 0.3s ease;
-    position: relative; /* Yurakcha uchun */
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(30, 132, 73, 0.2);
-}
-
-.card:active {
-    transform: scale(0.97);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Rasmlarning tepa burchagi doirasimon bo'lishini ta'minlaydi */
 }
 
 .card img {
     width: 100%;
-    height: 120px;
+    height: 140px;
     object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 8px;
+}
+
+.card-content {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .card h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: var(--main-btn); /* Nomi qo'shish tugmasi bilan bir xil rangda */
-}
-
-.card .price {
-    font-weight: bold;
-    color: #C0392B; /* To'q qizil rang */
-    margin-bottom: 10px;
     font-size: 15px;
-}
-
-/* Controls */
-.controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.controls button {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%; /* To'liq doira */
-    border: none;
-    background-color: var(--main-btn);
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.controls span {
-    font-size: 16px;
-    min-width: 20px;
-    text-align: center;
     font-weight: 600;
-}
-
-/* Cart Items */
-.cart-item {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 12px;
-    margin: 10px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease;
-}
-
-.cart-item:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 8px rgba(30, 132, 73, 0.15);
-}
-
-.cart-item-info h4 {
-    font-size: 16px;
     margin-bottom: 4px;
-    color: var(--main-btn); /* Qo'shish tugmasi bilan bir xil rang */
+    line-height: 1.2;
 }
 
-.cart-item-info p {
-    color: #C0392B; /* To'q qizil rang */
-    font-weight: bold;
+.price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 12px;
 }
 
-.delete-btn {
-    background: none !important;
-    color: #E74C3C !important;
-    font-size: 20px !important;
-    border: none !important;
-    width: auto !important;
-    height: auto !important;
-}
-
-.empty-cart {
-    text-align: center;
-    padding: 30px;
-    font-size: 16px;
-    opacity: 0.6;
-}
-
-.cart-total {
+/* 2. "0" Muammosi (Dynamic Add Button) */
+.controls-container {
+    margin-top: auto;
+    height: 36px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 15px;
-    gap: 10px;
 }
 
-.cart-total h3 {
-    color: #C0392B; /* Jami summa yorqinroq */
-    font-size: 18px;
-}
-
-/* Buttons */
-.main-btn, .secondary-btn {
+.add-btn {
     width: 100%;
-    padding: 14px;
-    border-radius: 10px;
+    height: 36px;
+    border-radius: 12px;
+    background-color: var(--button-color);
+    color: var(--button-text-color);
     border: none;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    font-family: 'Outfit', sans-serif;
-    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.1s;
 }
 
-.main-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(30, 132, 73, 0.25);
+.add-btn:active {
+    opacity: 0.8;
 }
 
-.secondary-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    background-color: rgba(30, 132, 73, 0.05);
-}
-
-.main-btn {
-    background-color: var(--main-btn);
-    color: white;
-}
-
-.secondary-btn {
-    background-color: transparent;
-    color: var(--main-btn);
-    border: 2px solid var(--main-btn);
-}
-
-/* Form */
-.form-group {
-    padding: 5px 15px;
-}
-
-.form-group input {
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
-    padding: 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 14px;
-    background-color: var(--card-bg);
+    height: 36px;
+    background-color: var(--secondary-bg-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.quantity-controls button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
     color: var(--text-color);
-    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-color: var(--main-btn);
+.quantity-controls button:active {
+    background-color: rgba(0,0,0,0.05);
 }
 
-#submit-order-btn {
-    margin: 10px 15px;
-    width: calc(100% - 30px);
+.quantity-controls span {
+    font-size: 15px;
+    font-weight: 600;
+    flex-grow: 1;
+    text-align: center;
 }
 
-#back-to-cart-btn {
-    margin: 0 15px;
-    width: calc(100% - 30px);
-}
-
-/* Bottom Navigation */
+/* 3. Zamonaviy Bottom Navigation (Pastki menyu) */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--bg-color);
+    background-color: var(--nav-bg);
     display: flex;
-    padding: 8px 8px;
-    border-top: 1px solid var(--border-color);
-    z-index: 100;
+    justify-content: space-around;
+    padding: 8px 4px 20px; /* Safe area in iOS */
+    box-shadow: 0 -1px 0 rgba(0,0,0,0.05);
+    z-index: 1000;
 }
 
 .nav-btn {
     flex: 1;
-    background-color: var(--nav-bg);
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--main-btn); /* Yon chiziq yashil */
-    color: var(--text-color);
-    font-size: 14px;
-    font-weight: 600;
+    background: transparent;
+    border: none;
+    color: var(--hint-color);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    min-height: 48px; /* Fat Finger rule: > 44px */
     cursor: pointer;
     position: relative;
-    opacity: 0.7;
-    transition: all 0.3s ease;
-    margin: 0 4px;
-    padding: 8px 4px;
+    padding: 4px 0;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.nav-btn:hover:not(.active) {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(30, 132, 73, 0.15);
+.nav-icon {
+    font-size: 22px;
+    margin-bottom: 2px;
+}
+
+.nav-label {
+    font-size: 11px;
+    font-weight: 500;
 }
 
 .nav-btn.active {
-    opacity: 1;
-    color: white;
-    background-color: var(--main-btn);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    color: var(--nav-active-color);
 }
 
-.cart-nav-btn {
-    color: #E67E22;
-}
-
-.cart-nav-btn.active {
-    background-color: #E67E22;
-    color: white;
+/* iOS pill background for active nav item */
+.nav-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 2px; left: 10%; right: 10%; bottom: 2px;
+    background-color: var(--nav-active-bg);
+    border-radius: 16px;
+    z-index: -1;
 }
 
 .badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #E74C3C;
+    top: 2px;
+    right: 20%;
+    background-color: #ff3b30;
     color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 700;
+    height: 18px;
+    min-width: 18px;
+    border-radius: 9px;
+    display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 5px;
+}
+
+/* Cart Specific */
+.cart-item {
+    background-color: var(--bg-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.cart-item-info { flex-grow: 1; }
+.cart-item-info h4 { font-size: 16px; margin-bottom: 6px; font-weight: 600; }
+.cart-item-info p { font-size: 14px; font-weight: 700; color: var(--text-color); }
+
+.cart-item .controls-container {
+    width: 100px;
+    margin-top: 0;
+}
+
+.empty-cart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--hint-color);
+}
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+
+.cart-total {
+    padding: 20px 16px;
+    background-color: var(--bg-color);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    margin-top: 20px;
+}
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Forms */
+.form-card {
+    background-color: var(--bg-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 0 16px;
+    box-shadow: var(--shadow);
+}
+.form-group { margin-bottom: 16px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--hint-color);
+    margin-bottom: 8px;
+}
+.form-group input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: var(--secondary-bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--button-color);
+}
+
+.location-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--secondary-bg-color);
+    color: var(--link-color);
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.location-status {
+    font-size: 12px; margin-top: 8px; text-align: center; color: var(--hint-color);
+}
+
+.back-btn {
+    width: calc(100% - 32px);
+    margin: 20px 16px;
+    padding: 14px;
+    background-color: transparent;
+    color: var(--button-color);
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 /* User Profile */
 .user-profile {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
-    margin: 8px 12px;
-    background-color: var(--card-bg);
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--main-btn); /* Yon chiziq yashil */
-    cursor: pointer;
-    transition: all 0.3s ease;
+    padding: 12px 16px;
+    background-color: var(--bg-color);
+    margin-bottom: 8px;
 }
-
-.user-profile:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
 .user-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 12px;
-    border: 1px solid var(--main-btn);
+    width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px;
 }
-
-.user-avatar-text {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background-color: var(--main-btn);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    font-weight: 700;
-    margin-right: 12px;
-    border: 1px solid var(--border-color);
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--main-btn);
-}
-
-.user-username {
-    font-size: 12px;
-    color: var(--text-color);
-    opacity: 0.8;
-}
-
-/* Like Button */
-.like-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: #E8F5E9; /* Och yashil */
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    color: #ccc;
-    transition: all 0.3s ease;
-    z-index: 10;
-}
-
-.like-btn.active {
-    color: #E74C3C; /* Qizil yurakcha */
-    background: #ffffff;
-}
-
-/* Toast */
-.toast {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #E8F5E9; /* Och yashil */
-    color: #1E8449; /* To'q yashil yozuv */
-    text-align: center;
-    border-radius: 8px;
-    padding: 12px;
-    position: fixed;
-    z-index: 1000;
-    left: 50%;
-    bottom: 80px;
-    font-size: 14px;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity 0.3s, visibility 0.3s;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    border: 1px solid var(--main-btn);
-}
-
-.toast.show {
-    visibility: visible;
-    opacity: 1;
-}
+.user-name { font-size: 16px; font-weight: 600; }
+.user-username { font-size: 13px; color: var(--hint-color); }
