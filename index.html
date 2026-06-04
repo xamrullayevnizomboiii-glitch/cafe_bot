@@ -1,12 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
-    <meta http-equiv="refresh" content="0; url=/mini_app/index.html" />
-    <title>Redirecting...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Oson Dostavka</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=20001">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <script>
-        window.location.href = "/mini_app/index.html";
-    </script>
+
+    <div id="app">
+
+        <!-- User Profile Banner -->
+        <div id="user-profile" class="user-profile" style="display:none;"></div>
+
+        <!-- Foods Section -->
+        <div id="foods-section" class="section active">
+            <h2>🍽 Taomlar</h2>
+            <div class="items-grid" id="foods-list"></div>
+        </div>
+
+        <!-- Salads Section -->
+        <div id="salads-section" class="section">
+            <h2>🥗 Salatlar</h2>
+            <div class="items-grid" id="salads-list"></div>
+        </div>
+
+        <!-- Drinks Section -->
+        <div id="drinks-section" class="section">
+            <h2>🥤 Ichimliklar</h2>
+            <div class="items-grid" id="drinks-list"></div>
+        </div>
+
+        <!-- Cart Section -->
+        <div id="cart-section" class="section">
+            <h2>🛒 Savat</h2>
+            <div id="cart-items">
+                <div class="empty-cart">
+                    <div class="empty-icon">🛒</div>
+                    <p>Savatingiz bo'sh</p>
+                </div>
+            </div>
+            <div class="cart-total" id="cart-total-block" style="display:none;">
+                <div class="cart-total-row">
+                    <span>Jami:</span>
+                    <span id="total-price" class="total-sum">0 so'm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Form -->
+        <div id="order-form" class="section" style="display:none;">
+            <h2>📝 Buyurtma</h2>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>Ism</label>
+                    <input type="text" id="name" placeholder="Ismingiz" autocomplete="given-name">
+                </div>
+                <div class="form-group">
+                    <label>Familya</label>
+                    <input type="text" id="surname" placeholder="Familyangiz" autocomplete="family-name">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="phone" placeholder="+998 90 123 45 67" autocomplete="tel">
+                </div>
+                <div class="form-group">
+                    <button type="button" id="location-btn" class="location-btn">
+                        📍 Joylashuvni yuborish
+                    </button>
+                    <p id="location-status" class="location-status"></p>
+                </div>
+            </div>
+            <button id="back-to-cart-btn" class="back-btn">← Savatga qaytish</button>
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-target="foods-section">
+            <span class="nav-icon">🍽</span>
+            <span class="nav-label">Taomlar</span>
+        </button>
+        <button class="nav-btn" data-target="salads-section">
+            <span class="nav-icon">🥗</span>
+            <span class="nav-label">Salatlar</span>
+        </button>
+        <button class="nav-btn" data-target="drinks-section">
+            <span class="nav-icon">🥤</span>
+            <span class="nav-label">Ichimliklar</span>
+        </button>
+        <button class="nav-btn cart-nav-btn" data-target="cart-section">
+            <span class="nav-icon">🛒</span>
+            <span class="nav-label">Savat</span>
+            <span id="cart-badge" class="badge" style="display:none;">0</span>
+        </button>
+    </nav>
+
+    <script src="data.js?v=20001"></script>
+    <script src="app.js?v=20001"></script>
 </body>
 </html>
